@@ -29,6 +29,65 @@ class BinaryTree:
             print(focus_node)
             self.in_order_traverse(focus_node.right_child)
 
+    def remove(self, key):
+        focus_node = self.root
+        parent = self.root
+        is_left_child = True
+        while focus_node.key != key:
+            if key < focus_node.key:
+                is_left_child = True
+                focus_node = focus_node.left_child
+            else:
+                is_left_child = False
+                focus_node = focus_node.right_child
+            if focus_node is None:
+                return False
+
+        if focus_node.left_child is None and focus_node.right_child is None:
+            if focus_node == self.root:
+                self.root = None
+            elif is_left_child:
+                parent.left_child = None
+            else:
+                parent.right_child = None
+        elif focus_node.right_child is None:
+            if focus_node == self.root:
+                root = focus_node.left_child
+            elif is_left_child:
+                parent.left_child = focus_node.left_child
+            else:
+                parent.right_child = focus_node.left_child
+        elif focus_node.left_child is None:
+            if focus_node == self.root:
+                root = focus_node.right_child
+            elif is_left_child:
+                parent.left_child = focus_node.right_child
+            else:
+                parent.right_child = focus_node.left_child
+        else:
+            replacement = self.get_replacement_node(focus_node)
+            if focus_node == self.root:
+                self.root = replacement
+            elif is_left_child:
+                parent.left_child = replacement
+            else:
+                parent.right_child = replacement
+            replacement.left_child = focus_node.left_child
+
+    def get_replacement_node(self, replaced_node):
+        replacement_parent = replaced_node
+        replacement = replaced_node
+        focus_node = replaced_node.right_child
+        while focus_node is not None:
+            replacement_parent = replacement
+            replacement = focus_node
+            focus_node = focus_node.left_child
+        if replacement != replaced_node.right_child:
+            replacement_parent.left_child = replaced_node.right_child
+            replacement.right_child = replaced_node.right_child
+
+        return replacement
+
     def preorder_traverse(self, focus_node):
         if focus_node is not None:
             print(focus_node)
@@ -81,3 +140,7 @@ if __name__ == "__main__":
     print(tree.find(85))
     print(tree.find(9))
     print()
+    tree.in_order_traverse(tree.root)
+    tree.remove(25)
+    print("\nVice President Replaced\n")
+    tree.in_order_traverse(tree.root)
